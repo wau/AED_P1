@@ -1,6 +1,5 @@
 
 package aed.collections;
-
 import java.util.Arrays;
 import java.util.Iterator;
 //teste
@@ -226,15 +225,21 @@ public class UnrolledLinkedList<T> implements IList<T> {
                 start = newNode;
                 this.nNodes++;
             }*/
-            for (int i = startIdx; i < start.size(); i++)
+            for (int i = 0; i < start.size(); i++)
             {
-                newArr[i+1] = start.items[i];
+                if (i >= startIdx)
+                {
+                    newArr[i+1] = start.items[i];
+                }
+                else {
+                    newArr[i] = start.items[i];
+                }
             }
 
 
            System.out.println(Arrays.deepToString(newArr));
             //start.items = newArr.clone();
-            System.arraycopy(newArr, startIdx, start.items, 0, blockSize);
+            System.arraycopy(newArr, 0, start.items, 0, blockSize);
 
        // }
 
