@@ -102,6 +102,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.add(9);
         List.add(10);
         List.add(11);
+        //List.add(12);
 
        /* List.set(10, 12);
 
@@ -109,7 +110,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.remove();
         List.remove();*/
 
-        List.rightShift(List.first, 0, 0);
+        List.rightShift(List.last, 1, 0);
 
 
        // System.out.println(List.getArrayOfBlocks().toString());
@@ -142,7 +143,8 @@ public class UnrolledLinkedList<T> implements IList<T> {
          int counter = 0;
          while (currentnode != null)
          {
-             for (int i = 0; i < currentnode.size(); i++)
+            // for (int i = 0; i < currentnode.size(); i++)
+             for (int i = 0; i < blockSize; i++)
              {
                  result[counter][i] = currentnode.getItem(i);
              }
@@ -210,32 +212,30 @@ public class UnrolledLinkedList<T> implements IList<T> {
         int itemsToAdd =  start.size() - startIdx;
 
 
-            if (startIdx + itemsToAdd > blockSize) // need to create a new node
+            //if (startIdx + itemsToAdd > blockSize) // need to create a new node
+           /* if (blockSize - start.size() >= 1) // need to create a new node
             {
-               /* Node newNode = new Node();
-                for(int i = this.node.size() / 2 + 1; i < this.last.size(); i++)
+                Node newNode = new Node();
+                for(int i = blockSize/2-1; i < blockSize; i++)
                 {
-                    T citem = last.getItem(i);
+                    T citem = start.getItem(i);
+                    start.removeIdx(i);
                     newNode.addInNode(citem);
-                    last.removeIdx(i);
                 }
-                newNode.addInNode(item);
-                this.last.next = newNode;
-                this.last = newNode;
-                this.nNodes++;*/
+                start.next = newNode;
+                start = newNode;
+                this.nNodes++;
+            }*/
+            for (int i = startIdx; i < start.size(); i++)
+            {
+                newArr[i+1] = start.items[i];
             }
-            else {
-                for (int i = startIdx; i < start.size(); i++)
-                {
-                    newArr[i+1] = start.items[i];
-                }
 
 
-                System.out.println(Arrays.deepToString(newArr));
-                //start.items = newArr.clone();
-                System.arraycopy(newArr, 0, start.items, 0, blockSize);
+           System.out.println(Arrays.deepToString(newArr));
+            //start.items = newArr.clone();
+            System.arraycopy(newArr, startIdx, start.items, 0, blockSize);
 
-            }
        // }
 
     }
