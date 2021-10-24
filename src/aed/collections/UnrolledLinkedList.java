@@ -58,6 +58,17 @@ public class UnrolledLinkedList<T> implements IList<T> {
             this.counter--; //decrement counter
             return result;
         }
+
+        public void removeSince(int idx, int startSize)
+        {
+            for  (int i = idx; i < startSize; i++)
+            {
+                this.items[i] = null;
+                this.counter--;
+
+            }
+        }
+
         public void initNull()
         {
             for (int i = 0; i < blockSize; i++)
@@ -88,13 +99,13 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
     public static void main(String[] args) {
 
-        UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>();
+        UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(4);
 
         List.add(1);
         List.add(2);
         List.add(3);
         List.add(4);
-        List.add(5);
+       List.add(5);
         List.add(6);
         List.add(7);
         List.add(8);
@@ -109,7 +120,12 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.remove();
         List.remove();*/
 
-        List.rightShift(List.last, 1, 0);
+      //  List.rightShift(List.last, 1);
+
+
+//        System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
+
+        List.addAt(10, 25);
 
 
        // System.out.println(List.getArrayOfBlocks().toString());
@@ -177,12 +193,14 @@ public class UnrolledLinkedList<T> implements IList<T> {
             else {//block will be full
 
                 Node newNode = new Node();
-                for(int i = this.last.size() / 2 + 1; i < this.last.size(); i++)
+                //for(int i = this.last.size() / 2 + 1; i < this.last.size(); i++)
+                for(int i = blockSize/2 ; i < this.last.size(); i++)
                 {
                     T citem = last.getItem(i);
                     newNode.addInNode(citem);
-                    last.removeIdx(i);
+                    //last.removeIdx(i);
                 }
+                last.removeSince(blockSize/2, this.last.size());
                 newNode.addInNode(item);
                 this.last.next = newNode;
                 this.last = newNode;
@@ -203,7 +221,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         }
     }
 
-    void rightShift(Node start, int startIdx, T itemToKeep)
+    void rightShift(Node start, int startIdx)
     {
         Node node = start;
         T[] newArr =  (T[])new Object[blockSize];
@@ -237,12 +255,32 @@ public class UnrolledLinkedList<T> implements IList<T> {
             }
 
 
-           System.out.println(Arrays.deepToString(newArr));
+           //System.out.println(Arrays.deepToString(newArr));
             //start.items = newArr.clone();
             System.arraycopy(newArr, 0, start.items, 0, blockSize);
 
        // }
 
+    }
+
+    private void moveHalf(Node node)
+    {
+        Node newNode = new Node();
+
+        for(int i = blockSize/2; i < last.size(); i++)
+        {
+            T citem = node.getItem(i);
+            newNode.addInNode(citem);
+           // node.removeIdx(i);
+        }
+
+        last.removeSince(blockSize/2, this.last.size());
+
+
+        Node next = node.next;
+        newNode.next = next;
+        node.next = newNode;
+        this.nNodes++;
     }
 
     @Override
@@ -266,8 +304,16 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
                 if (isInThisBlock)
                 {
+                    rightShift(currentnode, idx); // right shift first
+                    currentnode.setItem(idx, item);
+                    currentnode.counter++;
+                    if (currentnode.size() == blockSize)
+                    {
+                        moveHalf(currentnode);
 
+                    }
 
+                    return;
                 }
                 else
                 {
@@ -432,7 +478,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
                 this.idx = 0;
             }
 
-            System.out.println(result);
+         //   System.out.println(result);
             return result;
         }
     }
