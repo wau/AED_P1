@@ -38,6 +38,11 @@ public class UnrolledLinkedList<T> implements IList<T> {
             return this.items[idx];
         }
 
+        public void setItem(int idx, T item) {
+
+            this.items[idx] = item;
+        }
+
         public void addInNode(T item) {
 
             this.items[counter++] = item;
@@ -54,11 +59,15 @@ public class UnrolledLinkedList<T> implements IList<T> {
             this.counter--; //decrement counter
             return result;
         }
+        public void initNull()
+        {
+            for (int i = 0; i < blockSize; i++)
+            {
+                this.items[i] = null;
+            }
+        }
     }
-
-
     /////////////////////
-
     public UnrolledLinkedList() {
         this.first = null;
         this.blockSize = 4;
@@ -94,23 +103,35 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.add(10);
         List.add(11);
 
+       /* List.set(10, 12);
+
+        List.remove();
+        List.remove();
+        List.remove();*/
+
+        List.rightShift(List.first, 0, 0);
+
+
        // System.out.println(List.getArrayOfBlocks().toString());
 
             //Integer[][] result = List.getArrayOfBlocks();
 
         //System.out.println(List.get(8));
 
-        Iterator<Integer>  it = List.iterator();
+        /*Iterator<Integer>  it = List.iterator();
 
         while (it.hasNext())
         {
             it.next();
-        }
+        }*/
 
 
 
+        UnrolledLinkedList<Integer> shallow =  (UnrolledLinkedList<Integer>) List.shallowCopy();
 
         System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
+        System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
+        System.out.println(List.size());
     }
 
      T[][] getArrayOfBlocks() {
@@ -132,6 +153,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         return result;
     }
     ////////////////
+
 
 
     public void add(T item) {
@@ -180,11 +202,77 @@ public class UnrolledLinkedList<T> implements IList<T> {
         }
     }
 
-    @Override
-    public void addAt(int index, T item) {
+    void rightShift(Node start, int startIdx, T itemToKeep)
+    {
+        Node node = start;
+        T[] newArr =  (T[])new Object[blockSize];
+
+        int itemsToAdd =  start.size() - startIdx;
+
+
+            if (startIdx + itemsToAdd > blockSize) // need to create a new node
+            {
+               /* Node newNode = new Node();
+                for(int i = this.node.size() / 2 + 1; i < this.last.size(); i++)
+                {
+                    T citem = last.getItem(i);
+                    newNode.addInNode(citem);
+                    last.removeIdx(i);
+                }
+                newNode.addInNode(item);
+                this.last.next = newNode;
+                this.last = newNode;
+                this.nNodes++;*/
+            }
+            else {
+                for (int i = startIdx; i < start.size(); i++)
+                {
+                    newArr[i+1] = start.items[i];
+                }
+
+
+                System.out.println(Arrays.deepToString(newArr));
+                //start.items = newArr.clone();
+                System.arraycopy(newArr, 0, start.items, 0, blockSize);
+
+            }
+       // }
 
     }
 
+    @Override
+    public void addAt(int index, T item) {
+
+        int listSize = this.size();
+
+        if (index == listSize)
+        {
+            add(item);
+        }
+        else if (index < listSize)
+        {
+            Node currentnode = this.first;
+            int cnt = currentnode.size();
+            int idx = index;
+
+            while (currentnode != null)
+            {
+                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+
+                if (isInThisBlock)
+                {
+
+
+                }
+                else
+                {
+                    idx -= currentnode.size();
+                    currentnode = currentnode.next;
+                }
+            }
+        }
+    }
+    //TODO: improve remove to work on all cases
     public T remove()
     {
         int counter = 0;
@@ -192,7 +280,18 @@ public class UnrolledLinkedList<T> implements IList<T> {
         if (isEmpty())
             return null;
         else {
-            return this.last.removeLast();
+            if (this.last.size() <= 1)
+            {
+                T result = this.last.removeLast();
+                this.last = null;
+                this.nNodes--;
+                return result;
+
+            }
+            else {
+                return this.last.removeLast();
+            }
+
         }
     }
 
@@ -232,6 +331,28 @@ public class UnrolledLinkedList<T> implements IList<T> {
     @Override
     public void set(int index, T element) {
 
+        if (!isEmpty())
+        {
+            Node currentnode = this.first;
+            int cnt = currentnode.size();
+            int idx = index;
+
+            while (currentnode != null)
+            {
+                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+
+                if (isInThisBlock)
+                {
+                   currentnode.setItem(idx, element);
+                   return;
+                }
+                else
+                {
+                    idx -= currentnode.size();
+                    currentnode = currentnode.next;
+                }
+            }
+        }
     }
 
     @Override
@@ -240,12 +361,42 @@ public class UnrolledLinkedList<T> implements IList<T> {
     }
 
     public int size() {
-        return 0;
+        Node currentnode = this.first;
+        int counter = 0;
+        while (currentnode != null)
+        {
+
+            counter += currentnode.size();
+            currentnode = currentnode.next;
+
+        }
+        return counter;
     }
 
     @Override
     public IList<T> shallowCopy() {
-        return null;
+        UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
+        if (isEmpty())
+            return null;
+        else
+        {
+            Node currentnode = this.first;
+            Node node = new Node();
+            node.initNull();
+            newList.nNodes++;
+            newList.first = node;
+
+            while (currentnode.next != null)
+            {
+                node = new Node();
+                node.initNull();
+                newList.nNodes++;
+                newList.first.next = node;
+                currentnode = currentnode.next;
+            }
+        }
+
+        return newList;
     }
 
 
