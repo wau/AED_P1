@@ -62,6 +62,24 @@ public class UnrolledLinkedList<T> implements IList<T> {
             return result;
         }
 
+        public void leftShift(int idx)
+        {
+            T[] newArr =  (T[])new Object[blockSize];
+            for (int i = 0; i < this.size(); i++)
+            {
+                if (i < idx)
+                    newArr[i] = this.items[i];
+                else
+                    newArr[i] = this.items[i+1];
+
+
+            }
+            //System.out.println(Arrays.deepToString(newArr));
+            //start.items = newArr.clone();
+            System.arraycopy(newArr, 0, this.items, 0, blockSize);
+
+        }
+
         public void removeSince(int idx, int startSize)
         {
             for  (int i = idx; i < startSize; i++)
@@ -104,7 +122,25 @@ public class UnrolledLinkedList<T> implements IList<T> {
     {
         UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(blockSize);
 
-        int trials = 30;
+        int trials = 45;
+        double totalTime = 0;
+        Random r = new Random();
+
+        for (int i2 = 0; i2 < n; i2++)
+        {
+            List.add(r.nextInt());
+        }
+        for(int i = 0; i < trials; i++)
+        {
+            long time = System.currentTimeMillis();
+
+            List.get(n/2);
+
+            totalTime += System.currentTimeMillis() - time;
+        }
+        return totalTime/trials;
+
+        /*int trials = 45;
         double totalTime = 0;
         Random r = new Random();
         for(int i = 0; i < trials; i++)
@@ -118,8 +154,26 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
             totalTime += System.currentTimeMillis() - time;
         }
-       // System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
-        return totalTime/trials;
+        return totalTime/trials;*/
+    }
+
+    public static void testeRazao()
+    {
+        int start = 1000;
+        int maxx = 100000000;
+        int counter = 0;
+
+        int blocksizes[] = {16, 32, 256, 512};
+        double times[] = {0.0, 0.0, 0.0, 0.0};
+
+        for (int i = start; i < maxx; i*=2)
+        {
+            for (int j = 0; j < blocksizes.length;  j++)
+            {
+                times[j] = calculateAverageExecutionTime(i, blocksizes[j]);
+            }
+            System.out.println("n =" + i + ' ' + times[0] + ' '   + times[1] + ' ' + times[2] +  ' ' + times[3]);
+        }
     }
 
 
@@ -138,20 +192,24 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.add(9);
         List.add(10);
         List.add(11);
-        //List.add(12);
 
-       /* List.set(10, 12);
+         // List.addAt(10, 25);
 
-        List.remove();
-        List.remove();
-        List.remove();*/
-
-      //  List.rightShift(List.last, 1);
+          /*List.remove(4);
+        List.remove(4);
+        List.remove(0);
+        List.remove(0);*/
 
 
-//        System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
+      /*  List.first.setItem(2, 26);
+        List.first.counter++;
+        List.first.setItem(3, 27);
+        List.first.counter++;
 
-        List.addAt(10, 25);
+        System.out.println(List.first.size());
+
+        List.addAt(1, 30);*/
+
 
 
        // System.out.println(List.getArrayOfBlocks().toString());
@@ -172,27 +230,59 @@ public class UnrolledLinkedList<T> implements IList<T> {
         UnrolledLinkedList<Integer> shallow =  (UnrolledLinkedList<Integer>) List.shallowCopy();
 
         System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
-        System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
-        System.out.println(List.size());
+       // System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
+       // System.out.println(List.size());
 
 
 
         // ENSAIOS DE RAZÃO DOBRADA
 
-        int n = 500;
-        double previousTime = calculateAverageExecutionTime(n, 64);
-        System.out.println(previousTime);
+       /* int n = 500000*2;
+        double previousTime = calculateAverageExecutionTime(n, 16);
+        System.out.println(previousTime);*/
 
         //bls = blocksize
 
+        //(TEMPO EM MILISEGUNDOS)
         // TESTE DO METODO ADD
-        // TEMPO / bls = 2 / bls = 4 / bls = 8 / bls = 16 / bls = 32 / 64
-        //n = 125 / 0.03333/ 0.03333  / 0.03333  / 0.03333 / 0.03333 / 0.03333
-        //n = 250 /0.066667 / 0.03333 / 0.03333 / 0.03333 / 0.03333 / 0.06667
-        //n = 500 /0.066667 / 0.06667 /  0.06667 / 0.03333 / 0.03333 /
-        //n = 1000 /0.1 / 0.1 /  0.06667 / 0.06667 / 0.06667 / 0.06667 /
+        // N / bls = 2 / bls = 4 / bls = 8 / bls = 16 / bls = 32 / bls = 64 / bls = 256
+        //n = 500 / 0.06667 / 0.06667 /  0.06667  /0.06667  / 0.06667  / 0.06667 / 0.04446
+      //  n = 1000 / 0.08889 / 0.08889/  0.08889 / 0.08889/ 0.06667 /  0.08889 / 0.08889
+        //  n = 2000 / 0.17778/ 0.15556/  0.17778 / 0.15556/ 0.13333 /  0.15556 / 0.15556
+        //  n = 4000 / 0.24444/ 0.24444/  0.24444 / 0.24444/ 0.2222 / 0.2222 / 0.2
+        //  n = 8000 / 4.1777/ 0.42222/ 0.355555 / 0.355555/ 0.355555 /  0.355555 / 0.3333
+        //  n = 16000 / 8.08889/ 4.06666/  3.31111 / 2.4222/ 2.4222 /  0.55555 / 0.5111
+        //  n = 32000 / 13.0666/ 9.7555/  5.9111 / 4.2888/ 1.9333 /  1.5111 / 1.17777
+        //  n = 64000 / 23.26666/ 14.57777/  10.4222 / 7.2888/ 4.17777 /  3.13333 / 2.1111
 
+        //Portanto, r ~ 2 (razão aproximadamente 2)
+        //Logo T(n) ~ n,  o metodo add tem complexidade n
 
+        /////////////////////////////////////////////////////////////////////////////////////
+
+        //TESTE DO METODO GET
+        //USANDO A FUNÇÃO //testeRazao();
+        //(TEMPO EM MILISEGUNDOS)
+
+        // N /   bls = 16 / bls = 32   /   bls = 256   /   bls = 512
+
+       // n =256000 0.06666666666666667     0.022222222222222223        0.0                             0.0
+       // n =512000 0.08888888888888889     0.13333333333333333         0.022222222222222223            0.0
+       // n =1024000 0.17777777777777778    0.08888888888888889         0.022222222222222223            0.0
+        //n =2048000 1.2666666666666666     0.2                         0.13333333333333333             0.022222222222222223
+        //n =4096000 2.7555555555555555     0.8888888888888888          0.08888888888888889             0.044444444444444446
+       // n =8192000 5.977777777777778      15.777777777777779           0.5555555555555556             0.37777777777777777
+       // n =16384000 24.666666666666668    38.91111111111111            1.6222222222222222             0.8666666666666667
+        //n =32768000 51.77777777777778     65.42222222222222            11.777777777777779             1.4666666666666666
+        //n =65536000 95.86666666666666     124.15555555555555            27.266666666666666            14.466666666666667
+
+        //Portanto, r ~ 2 (razão aproximadamente 2)
+        //Logo T(n) ~ n,  o metodo get tem complexidade n,  no entanto  só tem alguma importância a partir de n's muito grandes
+        //e concluimos que quanto maior o blocksize menor o tempo de execução
+
+        // Tendo em conta os testes concluímos que quanto maior for o blocksize maior será a eficiencia dos metodos add e get,
+        //no entanto desperdiçamos memória para valores muito grandes portanto diria que um bom valor default para o blocksize seria
+        // por exemplo 32.
 
 
 
@@ -205,7 +295,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
          Node currentnode = this.first;
          int counter = 0;
-         while (currentnode != null)
+         while (currentnode != null /*&& counter < this.nNodes*/)
          {
             // for (int i = 0; i < currentnode.size(); i++)
              for (int i = 0; i < blockSize; i++)
@@ -255,17 +345,6 @@ public class UnrolledLinkedList<T> implements IList<T> {
                 this.last = newNode;
                 this.nNodes++;
 
-                /*Node newnode = new Node();
-                int half = this.last.size() / 2;
-
-                for (int i = 0; i < half; i++)
-                {
-                    newnode.addInNode(this.last.getItem(i)); // move half
-                }
-                newnode.addInNode(item); // add item for last
-                this.last.next = newnode;
-                this.last = newnode;
-                this.nNodes++;*/
             }
         }
     }
@@ -277,21 +356,6 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
         int itemsToAdd =  start.size() - startIdx;
 
-
-            //if (startIdx + itemsToAdd > blockSize) // need to create a new node
-           /* if (blockSize - start.size() >= 1) // need to create a new node
-            {
-                Node newNode = new Node();
-                for(int i = blockSize/2-1; i < blockSize; i++)
-                {
-                    T citem = start.getItem(i);
-                    start.removeIdx(i);
-                    newNode.addInNode(citem);
-                }
-                start.next = newNode;
-                start = newNode;
-                this.nNodes++;
-            }*/
             for (int i = 0; i < start.size(); i++)
             {
                 if (i >= startIdx)
@@ -303,13 +367,9 @@ public class UnrolledLinkedList<T> implements IList<T> {
                 }
             }
 
-
            //System.out.println(Arrays.deepToString(newArr));
-            //start.items = newArr.clone();
+
             System.arraycopy(newArr, 0, start.items, 0, blockSize);
-
-       // }
-
     }
 
     private void moveHalf(Node node)
@@ -353,14 +413,23 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
                 if (isInThisBlock)
                 {
-                    rightShift(currentnode, idx); // right shift first
-                    currentnode.setItem(idx, item);
-                    currentnode.counter++;
                     if (currentnode.size() == blockSize)
                     {
                         moveHalf(currentnode);
 
                     }
+                    else {
+                        rightShift(currentnode, idx); // right shift first
+                        currentnode.setItem(idx, item);
+                        currentnode.counter++;
+                        if (currentnode.size() == blockSize)
+                        {
+                            moveHalf(currentnode);
+
+                        }
+
+                    }
+
 
                     return;
                 }
@@ -395,9 +464,56 @@ public class UnrolledLinkedList<T> implements IList<T> {
         }
     }
 
+
+
     @Override
     public T remove(int index) {
-        return null;
+        if (!isEmpty())
+        {
+            Node currentnode = this.first;
+            Node previous = null;
+            int cnt = currentnode.size();
+            int idx = index;
+
+            while (currentnode != null)
+            {
+                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+
+                if (isInThisBlock)
+                {
+                    T result = currentnode.removeIdx(idx);
+
+                    if (currentnode.size() <= 0)
+                    {
+                        if (currentnode == this.first)
+                        {
+                            this.first = this.first.next;
+                        }
+                        else {
+                            previous.next = currentnode.next;
+                        }
+
+                        currentnode = null;
+                        this.nNodes--;
+
+                    }
+                    else {
+                        currentnode.leftShift(idx);
+                    }
+                    return result;
+                }
+                else
+                {
+                    idx -= currentnode.size();
+                    previous = currentnode;
+                    currentnode = currentnode.next;
+                }
+            }
+            return null;
+        }
+        else {
+            return null;
+        }
     }
 
     public T get(int index) {
