@@ -2,7 +2,10 @@
 package aed.collections;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 //teste
+
+
 
 public class UnrolledLinkedList<T> implements IList<T> {
 
@@ -97,6 +100,29 @@ public class UnrolledLinkedList<T> implements IList<T> {
       //  this.size = 0;
     }
 
+    public static double calculateAverageExecutionTime(int n, int blockSize)
+    {
+        UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(blockSize);
+
+        int trials = 30;
+        double totalTime = 0;
+        Random r = new Random();
+        for(int i = 0; i < trials; i++)
+        {
+            int example = r.nextInt();
+            long time = System.currentTimeMillis();
+            for (int i2 = 0; i2 < n; i2++)
+            {
+                List.add(example);
+            }
+
+            totalTime += System.currentTimeMillis() - time;
+        }
+       // System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
+        return totalTime/trials;
+    }
+
+
     public static void main(String[] args) {
 
         UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(4);
@@ -148,6 +174,29 @@ public class UnrolledLinkedList<T> implements IList<T> {
         System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
         System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
         System.out.println(List.size());
+
+
+
+        // ENSAIOS DE RAZÃO DOBRADA
+
+        int n = 500;
+        double previousTime = calculateAverageExecutionTime(n, 64);
+        System.out.println(previousTime);
+
+        //bls = blocksize
+
+        // TESTE DO METODO ADD
+        // TEMPO / bls = 2 / bls = 4 / bls = 8 / bls = 16 / bls = 32 / 64
+        //n = 125 / 0.03333/ 0.03333  / 0.03333  / 0.03333 / 0.03333 / 0.03333
+        //n = 250 /0.066667 / 0.03333 / 0.03333 / 0.03333 / 0.03333 / 0.06667
+        //n = 500 /0.066667 / 0.06667 /  0.06667 / 0.03333 / 0.03333 /
+        //n = 1000 /0.1 / 0.1 /  0.06667 / 0.06667 / 0.06667 / 0.06667 /
+
+
+
+
+
+        ////////////
     }
 
      T[][] getArrayOfBlocks() {
