@@ -29,6 +29,6 @@ public interface IList<T> extends Iterable<T>{
     public void set(int index, T element);
 
     //returns a shallow copy of the list
-    public IList<T> shallowCopy();
+    public IList<T> shallowCopy() throws CloneNotSupportedException;
 
 }
