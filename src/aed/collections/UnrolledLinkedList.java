@@ -173,14 +173,27 @@ public class UnrolledLinkedList<T> implements IList<T> {
     }
 
 
-    public static void main(String[] args) throws CloneNotSupportedException {
+    public static void main(String[] args)  {
 
         UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(4);
 
         List.add(1);
+        List.add(2);
         List.add(3);
-        List.add(4);
-        List.add(5);
+
+        List.addAt(0, 0);
+        
+        List.add(77);
+        List.addAt(0, 0);
+        List.addAt(0, 0);
+
+        List.addAt(3, 10);
+       // List.addAt(2, 7);
+    //    List.addAt(2, 77);
+
+
+
+       /* List.add(5);
         List.add(6);
 
 
@@ -188,49 +201,15 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.addAt(0, 25);
         List.addAt(1, 30);
         List.addAt(3, 68);
-        List.addAt(3, 69);
-        // System.out.println(List.get(-30));
-        //List.addAt(3, 70);
-        //List.addAt(0, 26);
-
-        //List.addAt(2, 30);
-        //List.add(2);
-        // List.addAt(2, 70);
-
-        //List.add(69);
-
-        // List.add(70);
-        // List.add(71);
-
-       /* List.remove();
-        System.out.println(List.first.size());
-        List.remove();
-        List.remove();
-        System.out.println(List.first.size());
-        List.remove();
-       List.remove();*/
-
-        //List.remove();
-        //List.remove();
-
-        // List.addAt(2,69);
-
-        //     List.add(69);
-
-      /* Iterator<Integer>  it = List.iterator();
-
-        while (it.hasNext())
-        {
-            System.out.println(it.next());
-        }*/
+        List.addAt(3, 69);*/
 
 
 
          UnrolledLinkedList<Integer> shallow =  (UnrolledLinkedList<Integer>) List.shallowCopy();
-        //System.out.println(shallow.size());
+  //      System.out.println(shallow.nNodes);
         // System.out.println(List.size());
 
-       // List.add(3);
+      //  List.set(0, 3);
 
         System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
           System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
@@ -401,6 +380,32 @@ public class UnrolledLinkedList<T> implements IList<T> {
         this.nNodes++;
     }
 
+
+    void chooseTwo(Node previous, Node current, int idx, T item)
+    {
+        Node iterator = previous;
+
+        int counter = 0;
+
+        while (counter < 2)
+        {
+            boolean isInThisBlock = (idx) < iterator.size() && (idx) >= 0;
+
+            if (isInThisBlock)
+            {
+                rightShift(iterator, idx); // right shift first
+                iterator.setItem(idx, item);
+                iterator.counter++;
+            }
+            else {
+                iterator = current;
+            }
+
+            counter++;
+        }
+
+    }
+
     @Override
     public void addAt(int index, T item) {
 
@@ -418,30 +423,44 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
             while (currentnode != null)
             {
-                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+                boolean isInThisBlock = (idx) < currentnode.size() && (idx) >= 0;
 
                 if (isInThisBlock)
                 {
-                    /*if (currentnode.size() == blockSize)
+
+                    if (currentnode.size() == blockSize)
                     {
                         moveHalf(currentnode);
-                        rightShift(currentnode, idx); // right shift first
-                        currentnode.setItem(idx, item);
-                        currentnode.counter++;
+                        int counter = 0;
+                        while (counter < 2)
+                        {
+                            boolean inTHis = (idx) < currentnode.size() && (idx) >= 0;
 
+                            if (inTHis)
+                            {
+                                rightShift(currentnode, idx); // right shift first
+                                currentnode.setItem(idx, item);
+                                currentnode.counter++;
+                                return;
+                            }
+                            else {
+                                idx -= currentnode.size();
+                                currentnode = currentnode.next;
+                            }
+
+                            counter++;
+                        }
                     }
                     else {
-                        rightShift(currentnode, idx); // right shift first
-                        currentnode.setItem(idx, item);
-                        currentnode.counter++;
-                    }*/
-                    if (currentnode.size() == blockSize)
-                        moveHalf(currentnode);
+                            rightShift(currentnode, idx); // right sh
+                            currentnode.setItem(idx, item);
+                    }       currentnode.counter++;
 
-                    rightShift(currentnode, idx); // right shift first
-                    currentnode.setItem(idx, item);
-                    currentnode.counter++;
 
+
+
+
+                    //ERRO AQUI
                     return;
                 }
                 else
@@ -617,7 +636,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         return counter;
     }
 
-    @Override
+
     /*public IList<T> shallowCopy() {
         UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
         if (isEmpty())
@@ -648,60 +667,79 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
 
     }*/
-    public IList<T> shallowCopy() {
+
+    /*@Override
+    public IList<T> shallowCopy()  {
         UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
-        if (isEmpty())
-            return null;
-        else
+
+        int counter = 0;
+
+        Node originalNode = this.first;
+       // Node newNode = newList.first;
+        newList.first = new Node();
+
+
+
+        while (originalNode != null && counter < this.nNodes)
         {
-            Node nodeNewCurrent = new Node();
-            Node currentnode = this.first;
 
-            @SuppressWarnings("unchecked")
-            T[] copy2 = (T[])new Object[this.blockSize];
-            System.arraycopy( currentnode.items, 0, copy2, 0, blockSize);
-
-            for (int i = 0; i < blockSize; i++)
-            {
-                //  nodeNewCurrent.items[i] = copy[i];
-                nodeNewCurrent.setItem(i, copy2[i]);
-                nodeNewCurrent.counter++;
-            }
-            newList.first = nodeNewCurrent;
+          //  System.arraycopy();
 
 
-            newList.first = nodeNewCurrent;
-
-            nodeNewCurrent = newList.first;
-            int counter = 0;
-            newList.nNodes++;
-
-            while (counter < this.nNodes-1)
-            {
-               // nodeNewCurrent = currentnode;
-                currentnode = currentnode.next;
-
-                @SuppressWarnings("unchecked")
-                T[] copy = (T[])new Object[this.blockSize];
-                System.arraycopy( currentnode.items, 0, copy, 0, blockSize);
-                Node novo = new Node();
-
-                for (int i = 0; i < blockSize; i++)
-                {
-                  //  nodeNewCurrent.items[i] = copy[i];
-                    novo.setItem(i, copy[i]);
-                    novo.counter++;
-                }
-
-                nodeNewCurrent.next =  novo;//.next = new Node();
-                newList.nNodes++;
-                counter++;
-            }
-
+            originalNode = originalNode.next;
+            counter++;
         }
 
         return newList;
+    }*/
+    public IList<T> shallowCopy() {
+        UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
 
+        newList.first = new Node();
+        Node currentnode = this.first;
+
+        @SuppressWarnings("unchecked")
+        T[] copy2 = (T[])new Object[this.blockSize];
+        System.arraycopy( currentnode.items, 0, copy2, 0, blockSize);
+
+        for (int i = 0; i < blockSize; i++)
+        {
+            //  nodeNewCurrent.items[i] = copy[i];
+            newList.first.setItem(i, copy2[i]);
+            newList.first.counter++;
+        }
+
+        Node iteratorNode;
+
+        iteratorNode = newList.first;
+        int counter = 0;
+        newList.nNodes++;
+
+        while (counter < this.nNodes-1)
+        {
+            currentnode = currentnode.next;
+
+            @SuppressWarnings("unchecked")
+            T[] copy = (T[])new Object[this.blockSize];
+
+
+           // System.arraycopy( currentnode.items, 0, copy, 0, blockSize);
+            iteratorNode.next = new Node();
+            for (int i = 0; i < blockSize; i++)
+            {
+                copy[i] = currentnode.getItem(i);
+            }
+
+
+            for (int i = 0; i < blockSize; i++)
+            {
+                iteratorNode.next.setItem(i, copy[i]);//.setItem(i, copy[i]);
+                iteratorNode.next.counter++;
+            }
+            counter++;
+            newList.nNodes++;
+        }
+    return newList;
 
     }
   /* public IList<T> shallowCopy() {
