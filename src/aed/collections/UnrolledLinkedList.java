@@ -29,6 +29,12 @@ public class UnrolledLinkedList<T> implements IList<T> {
             this.next = null;
         }
 
+        public void CopyNode(Node n) {
+
+            this = n;
+
+        }
+
         public int size() {
             return this.counter;
         }
@@ -65,6 +71,17 @@ public class UnrolledLinkedList<T> implements IList<T> {
             return result;
         }
 
+        public Node shallowCopy() {
+            Node newNode = new Node();
+
+            for (int i = 0; i < blockSize; i++) {
+                newNode.items[i] = this.items[i];
+            }
+            newNode.counter = this.counter;
+            newNode.next = this.next.shallowCopy();
+            return newNode;
+        }
+
         public void leftShift(int idx)
         {
             @SuppressWarnings("unchecked")
@@ -75,8 +92,6 @@ public class UnrolledLinkedList<T> implements IList<T> {
                     newArr[i] = this.items[i];
                 else
                     newArr[i] = this.items[i+1];
-
-
             }
             //System.out.println(Arrays.deepToString(newArr));
             //start.items = newArr.clone();
@@ -692,7 +707,14 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
         return newList;
     }*/
+
+    @Override
     public IList<T> shallowCopy() {
+        UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
+
+
+    }
+    /* public IList<T> shallowCopy() {
         UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
 
         newList.first = new Node();
@@ -741,7 +763,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         }
     return newList;
 
-    }
+    }*/
   /* public IList<T> shallowCopy() {
         UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
         if (isEmpty())
