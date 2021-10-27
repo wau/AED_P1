@@ -3,6 +3,22 @@ package aed.collections;
 import java.util.Iterator;
 
 public class ULLQueue<T> implements IQueue<T>  {
+    public int blockSize = 4;
+    public class UnrolledLinkedList<T> {
+        private class Node{
+            private T[] items; // elementos do bloco
+            private int counter; // n de elementos do array do bloco
+            private Node next;
+
+            @SuppressWarnings("unchecked")
+            public Node() {
+
+                this.items =  (T[])new Object[blockSize];
+                this.counter = 0;
+                this.next = null;
+            }
+    }
+
 
     @Override
     public void enqueue(T item) {
