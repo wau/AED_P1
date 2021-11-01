@@ -19,6 +19,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         private T[] items; // elementos do bloco
         private int counter; // n de elementos do array do bloco
         private Node next;
+      //  private Node prev;
 
         @SuppressWarnings("unchecked")
         public Node() {
@@ -26,6 +27,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
             this.items = (T[]) new Object[blockSize];
             this.counter = 0;
             this.next = null;
+         //   this.prev = null;
         }
 
 
@@ -53,11 +55,15 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
         public T removeLast() {
             //System.out.println("counter" + this.counter);
-            T result = this.items[this.counter - 1];
-            this.items[this.counter - 1] = null; // delete last
-            this.counter--; //decrement counter
-            listSize--;
-            return result;
+            if (counter >= 1) {
+                T result = this.items[this.counter - 1];
+                this.items[this.counter - 1] = null; // delete last
+                this.counter--; //decrement counter
+                listSize--;
+                return result;
+            }
+            else
+                return null;
         }
 
         public T removeIdx(int idx) {
@@ -108,7 +114,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
     /////////////////////
     public UnrolledLinkedList() {
         this.first = null;
-        this.blockSize = 300;
+        this.blockSize = 512;
         this.last = null;
         this.nNodes = 0;
         this.listSize = 0;
@@ -171,7 +177,23 @@ public class UnrolledLinkedList<T> implements IList<T> {
         //List.addAt(0, 0);
 
         List.add(77);
-       // List.addAt(0, 0);
+       // List.add(77);
+      //  List.add(77);
+     //   List.add(77);
+        List.addAt(6, 69);
+
+        List.addAt(6, 71);
+
+
+        List.remove();
+        List.remove();
+        List.remove();
+
+        List.remove(0);
+        List.remove(0);
+
+
+
       //  List.addAt(0, 0);
 
     //    List.addAt(3, 10);
@@ -184,10 +206,10 @@ public class UnrolledLinkedList<T> implements IList<T> {
         }
 
 
-        UnrolledLinkedList<Integer> shallow = (UnrolledLinkedList<Integer>) List.shallowCopy();
+        //UnrolledLinkedList<Integer> shallow = (UnrolledLinkedList<Integer>) List.shallowCopy();
 
         System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
-        System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
+      //  System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
 
         // ENSAIOS DE RAZÃO DOBRADA
 
@@ -288,8 +310,10 @@ public class UnrolledLinkedList<T> implements IList<T> {
                 }
                 this.last.removeSince(blockSize / 2, this.last.size());
                 newNode.addInNode(item);
+                Node previousNode = this.last;
                 this.last.next = newNode;
                 this.last = newNode;
+             //   this.last.prev = previousNode; // novo
 
                 this.nNodes++;
 
@@ -317,7 +341,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         System.arraycopy(newArr, 0, start.items, 0, blockSize);
     }
 
-    private void moveHalf(Node node) {
+    private void moveHalf(Node node, int nodeCounter) {
         Node newNode = new Node();
 
         for (int i = blockSize / 2; i < blockSize; i++) {
@@ -331,6 +355,9 @@ public class UnrolledLinkedList<T> implements IList<T> {
         Node next = node.next;
         node.next = newNode;
         newNode.next = next;
+
+        if (nodeCounter == this.nNodes)
+            this.last = newNode;
         this.nNodes++;
     }
 
@@ -346,13 +373,17 @@ public class UnrolledLinkedList<T> implements IList<T> {
             int cnt = currentnode.size();
             int idx = index;
 
+            int nodeCounter = 0;
+
             while (currentnode != null) {
                 boolean isInThisBlock = (idx) < currentnode.size() && (idx) >= 0;
+                nodeCounter++;
+
 
                 if (isInThisBlock) {
 
                     if (currentnode.size() == blockSize) {
-                        moveHalf(currentnode);
+                        moveHalf(currentnode, nodeCounter);
                         int counter = 0;
                         while (counter < 2) {
                             boolean inTHis = (idx) < currentnode.size() && (idx) >= 0;
@@ -384,6 +415,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
                     idx -= currentnode.size();
                     currentnode = currentnode.next;
                 }
+
             }
         }
     }
@@ -391,29 +423,36 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
     @Override
     public T remove() {
-        int counter = 0;
+
 
         if (isEmpty())
             return null;
         else {
-            Node currentNode = this.first;
+
             Node previous = null;
-            while (currentNode.next != null && counter < this.nNodes - 1) {
-                currentNode = currentNode.next;
-                counter++;
-            }
+
             //chegamos ao fim dos nodes
 
-            if (currentNode.size() <= 1 && counter >= 1) {
-                T result = currentNode.removeLast();
-                //currentNode.next = null;
-                this.nNodes--;
+            if (this.last.size() == 1 && this.nNodes > 1) {
+                T result = this.last.removeLast();
+                int counter = 0;
+                Node previousLastNode = this.first;
+                while (counter < this.nNodes - 2) {
+                    previousLastNode = previousLastNode.next;
+                    counter++;
+                    //chegar ao penultimo nó
+                }
 
-                currentNode = null;
+
+
+                this.last = null;
+                this.last = previousLastNode;
+
+                this.nNodes--;
                 return result;
 
             } else {
-                return currentNode.removeLast();
+                return this.last.removeLast();
             }
 
         }
@@ -427,8 +466,12 @@ public class UnrolledLinkedList<T> implements IList<T> {
             int cnt = currentnode.size();
             int idx = index;
 
+
+            int nodeCounter = 0;
+
             while (currentnode != null) {
                 boolean isInThisBlock = (idx) <= currentnode.size() - 1 && (idx) >= 0;
+                nodeCounter++;
 
                 if (isInThisBlock && currentnode.size() > 0) {
                     T result = currentnode.removeIdx(idx);
@@ -440,8 +483,18 @@ public class UnrolledLinkedList<T> implements IList<T> {
                             previous.next = currentnode.next;
                         }
 
-                        currentnode = null;
-                        this.nNodes--;
+                        if (nodeCounter == this.nNodes)
+                        {
+                            this.last = previous;
+                        }
+
+                        if (this.nNodes > 1)
+                        {
+                            currentnode = null;
+                            this.nNodes--;
+
+                        }
+
 
                     } else {
                         currentnode.leftShift(idx);
