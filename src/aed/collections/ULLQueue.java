@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class ULLQueue<T> implements IQueue<T>  {
-    public int blockSize = 128;
+    public int blockSize = 200;
 
     Node first;
     Node last;
@@ -161,6 +161,8 @@ public class ULLQueue<T> implements IQueue<T>  {
             }
             return null;
         }
+
+
     }
 
     @Override
@@ -189,7 +191,9 @@ public class ULLQueue<T> implements IQueue<T>  {
     public IQueue<T> shallowCopy() {
         ULLQueue<T>  Q = new ULLQueue<T>();
 
-        Q.first = this.first.shallowCopy();
+        if (this.first != null)
+            Q.first = this.first.shallowCopy();
+
         Q.nNodes = this.nNodes;
 
         Q.size = this.size;
@@ -239,11 +243,16 @@ public class ULLQueue<T> implements IQueue<T>  {
         {
             T result = it.items[this.idx];
 
-            if (this.idx < this.it.size()) {
+          //  if (this.idx < this.it.size()) {
+            if (this.idx < blockSize-1) {
                 this.idx++;
             }
             else {
-                this.it = this.it.next;
+
+                if (this.it != null)
+                    this.it = this.it.next;
+
+
                 if (this.it != null)
                     this.idx = this.it.start;
                 else
@@ -256,7 +265,7 @@ public class ULLQueue<T> implements IQueue<T>  {
 
     }
     ///////
-
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ULLQueue<Integer> Q = new ULLQueue<Integer>();
         /*Q.enqueue(1);
@@ -267,14 +276,16 @@ public class ULLQueue<T> implements IQueue<T>  {
         Q.enqueue(5);
         Q.enqueue(6);*/
 
-       /* Q.enqueue(7);
+        Q.enqueue(7);
         Q.enqueue(8);
         Q.enqueue(9);
         Q.enqueue(10);
         Q.enqueue(11);
         Q.enqueue(12);
 
-        Q.enqueue(13);
+        Q.dequeue();
+
+        /*Q.enqueue(13);
         Q.enqueue(14);
         Q.enqueue(15);
         Q.enqueue(16);
@@ -296,9 +307,13 @@ public class ULLQueue<T> implements IQueue<T>  {
         System.out.println( "size" + " " + Q.size());
         System.out.println( "peek" + " " + Q.peek());
 
-      /*  ULLQueue<Integer> shallow =  (ULLQueue<Integer>) Q.shallowCopy();
+        ULLQueue<Integer> shallow =  (ULLQueue<Integer>) Q.shallowCopy();
      //   Q.enqueue(3);
+
+      //  Q.enqueue(1);
         System.out.println(Arrays.deepToString(Q.getArrayOfBlocks()));
+
+        System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
 
        // System.out.println(shallow.last);
 
@@ -307,21 +322,18 @@ public class ULLQueue<T> implements IQueue<T>  {
 
         Iterator iterator = Q.iterator();
 
+
+
         while(iterator.hasNext())
         {
-            System.out.println(iterator.next());
-        }*/
 
-        /*Iterator iterator1 = Q.iterator();
-        while(iterator.hasNext())
-        {
-            System.out.println(iterato1r.next());
-        }*/
-
-        //  Q.dequeue();
+           // T next = (T) iterator.next();
+           // iterator.next();
+              System.out.println(iterator.next());
+        }
 
 
-  //         System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
+        //         System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
         // System.out.println(Q.equals(shallow));
 
         //    System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
