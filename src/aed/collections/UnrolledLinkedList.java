@@ -1,5 +1,6 @@
 
 package aed.collections;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
@@ -14,7 +15,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
     private int blockSize;
     private int listSize;
 
-    private class Node{
+    private class Node {
         private T[] items; // elementos do bloco
         private int counter; // n de elementos do array do bloco
         private Node next;
@@ -22,7 +23,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         @SuppressWarnings("unchecked")
         public Node() {
 
-            this.items =  (T[])new Object[blockSize];
+            this.items = (T[]) new Object[blockSize];
             this.counter = 0;
             this.next = null;
         }
@@ -31,6 +32,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
         public int size() {
             return this.counter;
         }
+
 
         public T getItem(int idx) {
 
@@ -48,16 +50,18 @@ public class UnrolledLinkedList<T> implements IList<T> {
             this.counter++;
             listSize++;
         }
+
         public T removeLast() {
             //System.out.println("counter" + this.counter);
-            T result =  this.items[this.counter-1];
-            this.items[this.counter-1] = null; // delete last
+            T result = this.items[this.counter - 1];
+            this.items[this.counter - 1] = null; // delete last
             this.counter--; //decrement counter
             listSize--;
             return result;
         }
+
         public T removeIdx(int idx) {
-            T result =  this.items[idx];
+            T result = this.items[idx];
             this.items[idx] = null; // delete last
             this.counter--; //decrement counter
             listSize--;
@@ -76,16 +80,14 @@ public class UnrolledLinkedList<T> implements IList<T> {
             return newNode;
         }
 
-        public void leftShift(int idx)
-        {
+        public void leftShift(int idx) {
             @SuppressWarnings("unchecked")
-            T[] newArr =  (T[])new Object[blockSize];
-            for (int i = 0; i < this.size(); i++)
-            {
+            T[] newArr = (T[]) new Object[blockSize];
+            for (int i = 0; i < this.size(); i++) {
                 if (i < idx)
                     newArr[i] = this.items[i];
                 else
-                    newArr[i] = this.items[i+1];
+                    newArr[i] = this.items[i + 1];
             }
             //System.out.println(Arrays.deepToString(newArr));
             //start.items = newArr.clone();
@@ -93,10 +95,8 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
         }
 
-        public void removeSince(int idx, int startSize)
-        {
-            for  (int i = idx; i < startSize; i++)
-            {
+        public void removeSince(int idx, int startSize) {
+            for (int i = idx; i < startSize; i++) {
                 this.items[i] = null;
                 this.counter--;
                 listSize--;
@@ -104,6 +104,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
             }
         }
     }
+
     /////////////////////
     public UnrolledLinkedList() {
         this.first = null;
@@ -122,47 +123,28 @@ public class UnrolledLinkedList<T> implements IList<T> {
         this.listSize = 0;
     }
 
-    public static double calculateAverageExecutionTime(int n, int blockSize)
-    {
+    public static double calculateAverageExecutionTime(int n, int blockSize) {
         UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(blockSize);
 
         int trials = 45;
         double totalTime = 0;
         Random r = new Random();
 
-        for (int i2 = 0; i2 < n; i2++)
-        {
+        for (int i2 = 0; i2 < n; i2++) {
             List.add(r.nextInt());
         }
-        for(int i = 0; i < trials; i++)
-        {
+        for (int i = 0; i < trials; i++) {
             long time = System.currentTimeMillis();
 
-            List.get(n/2);
+            List.get(n / 2);
 
             totalTime += System.currentTimeMillis() - time;
         }
-        return totalTime/trials;
+        return totalTime / trials;
 
-        /*int trials = 45;
-        double totalTime = 0;
-        Random r = new Random();
-        for(int i = 0; i < trials; i++)
-        {
-            int example = r.nextInt();
-            long time = System.currentTimeMillis();
-            for (int i2 = 0; i2 < n; i2++)
-            {
-                List.add(example);
-            }
-
-            totalTime += System.currentTimeMillis() - time;
-        }
-        return totalTime/trials;*/
     }
 
-    public static void testeRazao()
-    {
+    public static void testeRazao() {
         int start = 1000;
         int maxx = 100000000;
         int counter = 0;
@@ -170,17 +152,15 @@ public class UnrolledLinkedList<T> implements IList<T> {
         int blocksizes[] = {16, 32, 256, 512};
         double times[] = {0.0, 0.0, 0.0, 0.0};
 
-        for (int i = start; i < maxx; i*=2)
-        {
-            for (int j = 0; j < blocksizes.length;  j++)
-            {
+        for (int i = start; i < maxx; i *= 2) {
+            for (int j = 0; j < blocksizes.length; j++) {
                 times[j] = calculateAverageExecutionTime(i, blocksizes[j]);
             }
-            System.out.println("n =" + i + ' ' + times[0] + ' '   + times[1] + ' ' + times[2] +  ' ' + times[3]);
+            System.out.println("n =" + i + ' ' + times[0] + ' ' + times[1] + ' ' + times[2] + ' ' + times[3]);
         }
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
 
         UnrolledLinkedList<Integer> List = new UnrolledLinkedList<Integer>(4);
 
@@ -188,30 +168,23 @@ public class UnrolledLinkedList<T> implements IList<T> {
         List.add(2);
         List.add(3);
 
-        List.addAt(0, 0);
+        //List.addAt(0, 0);
 
         List.add(77);
-        List.addAt(0, 0);
-        List.addAt(0, 0);
+       // List.addAt(0, 0);
+      //  List.addAt(0, 0);
 
-        List.addAt(3, 10);
-
+    //    List.addAt(3, 10);
 
 
         Iterator iterator = List.iterator();
 
-        while(iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }
 
 
-
-        UnrolledLinkedList<Integer> shallow =  (UnrolledLinkedList<Integer>) List.shallowCopy();
-        //      System.out.println(shallow.nNodes);
-        // System.out.println(List.size());
-
-        //  List.set(0, 3);
+        UnrolledLinkedList<Integer> shallow = (UnrolledLinkedList<Integer>) List.shallowCopy();
 
         System.out.println(Arrays.deepToString(List.getArrayOfBlocks()));
         System.out.println(Arrays.deepToString(shallow.getArrayOfBlocks()));
@@ -271,15 +244,13 @@ public class UnrolledLinkedList<T> implements IList<T> {
     public T[][] getArrayOfBlocks() {
 
         @SuppressWarnings("unchecked")
-        T[][] result = (T[][])new Object[this.nNodes][this.blockSize];
+        T[][] result = (T[][]) new Object[this.nNodes][this.blockSize];
 
         Node currentnode = this.first;
         int counter = 0;
-        while (currentnode != null && counter < this.nNodes)
-        {
+        while (currentnode != null && counter < this.nNodes) {
             // for (int i = 0; i < currentnode.size(); i++)
-            for (int i = 0; i < blockSize; i++)
-            {
+            for (int i = 0; i < blockSize; i++) {
                 result[counter][i] = currentnode.getItem(i);
                 //System.out.println(currentnode.getItem(i));
             }
@@ -300,57 +271,43 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
             this.first = node;
             this.last = node;
-        }
-        else
-        {
-            Node currentNode = this.first;
-            while (currentNode.next != null)
-            {
-                currentNode = currentNode.next;
-            }
-            //chegamos ao fim dos nodes
+        } else {
 
             // if (this.last.size() < this.blockSize-1)
-            if (currentNode.size() < this.blockSize)
-            {
-                currentNode.addInNode(item);
+            if (this.last.size() < this.blockSize) {
+                this.last.addInNode(item);
 
-            }
-            else {//block will be full
+            } else {//block is full
 
                 Node newNode = new Node();
                 //for(int i = this.last.size() / 2 + 1; i < this.last.size(); i++)
-                for(int i = blockSize/2 ; i < currentNode.size(); i++)
-                {
-                    T citem = currentNode.getItem(i);
+                for (int i = blockSize / 2; i < this.last.size(); i++) {
+                    T citem = this.last.getItem(i);
                     newNode.addInNode(citem);
                     //last.removeIdx(i);
                 }
-                currentNode.removeSince(blockSize/2,currentNode.size());
+                this.last.removeSince(blockSize / 2, this.last.size());
                 newNode.addInNode(item);
-                currentNode.next = newNode;
-                //  this.last = newNode;
+                this.last.next = newNode;
+                this.last = newNode;
+
                 this.nNodes++;
 
             }
         }
     }
 
-    void rightShift(Node start, int startIdx)
-    {
+    void rightShift(Node start, int startIdx) {
         Node node = start;
         @SuppressWarnings("unchecked")
-        T[] newArr =  (T[])new Object[blockSize];
+        T[] newArr = (T[]) new Object[blockSize];
 
-        int itemsToAdd =  start.size() - startIdx;
+        int itemsToAdd = start.size() - startIdx;
 
-        for (int i = 0; i < start.size(); i++)
-        {
-            if (i >= startIdx)
-            {
-                newArr[i+1] = start.items[i];
-            }
-            else {
+        for (int i = 0; i < start.size(); i++) {
+            if (i >= startIdx) {
+                newArr[i + 1] = start.items[i];
+            } else {
                 newArr[i] = start.items[i];
             }
         }
@@ -360,18 +317,16 @@ public class UnrolledLinkedList<T> implements IList<T> {
         System.arraycopy(newArr, 0, start.items, 0, blockSize);
     }
 
-    private void moveHalf(Node node)
-    {
+    private void moveHalf(Node node) {
         Node newNode = new Node();
 
-        for(int i = blockSize/2; i <blockSize; i++)
-        {
+        for (int i = blockSize / 2; i < blockSize; i++) {
             T citem = node.getItem(i);
             newNode.addInNode(citem);
             // node.removeIdx(i);
         }
 
-        node.removeSince(blockSize/2, blockSize);
+        node.removeSince(blockSize / 2, blockSize);
 
         Node next = node.next;
         node.next = newNode;
@@ -384,48 +339,38 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
         int listSize = this.size();
 
-        if (index == listSize)
-        {
+        if (index == listSize) {
             add(item);
-        }
-        else if (index < listSize)
-        {
+        } else if (index < listSize) {
             Node currentnode = this.first;
             int cnt = currentnode.size();
             int idx = index;
 
-            while (currentnode != null)
-            {
+            while (currentnode != null) {
                 boolean isInThisBlock = (idx) < currentnode.size() && (idx) >= 0;
 
-                if (isInThisBlock)
-                {
+                if (isInThisBlock) {
 
-                    if (currentnode.size() == blockSize)
-                    {
+                    if (currentnode.size() == blockSize) {
                         moveHalf(currentnode);
                         int counter = 0;
-                        while (counter < 2)
-                        {
+                        while (counter < 2) {
                             boolean inTHis = (idx) < currentnode.size() && (idx) >= 0;
 
-                            if (inTHis)
-                            {
+                            if (inTHis) {
                                 rightShift(currentnode, idx); // right shift first
                                 currentnode.setItem(idx, item);
                                 currentnode.counter++;
                                 this.listSize++;
                                 return;
-                            }
-                            else {
+                            } else {
                                 idx -= currentnode.size();
                                 currentnode = currentnode.next;
                             }
 
                             counter++;
                         }
-                    }
-                    else {
+                    } else {
                         rightShift(currentnode, idx); // right sh
                         currentnode.setItem(idx, item);
                         currentnode.counter++;
@@ -433,13 +378,9 @@ public class UnrolledLinkedList<T> implements IList<T> {
                     }
 
 
-
-
                     //ERRO AQUI
                     return;
-                }
-                else
-                {
+                } else {
                     idx -= currentnode.size();
                     currentnode = currentnode.next;
                 }
@@ -448,9 +389,8 @@ public class UnrolledLinkedList<T> implements IList<T> {
     }
 
 
-    //TODO: improve remove to work on all cases
-    public T remove()
-    {
+    @Override
+    public T remove() {
         int counter = 0;
 
         if (isEmpty())
@@ -458,15 +398,13 @@ public class UnrolledLinkedList<T> implements IList<T> {
         else {
             Node currentNode = this.first;
             Node previous = null;
-            while (currentNode.next != null && counter < this.nNodes-1)
-            {
+            while (currentNode.next != null && counter < this.nNodes - 1) {
                 currentNode = currentNode.next;
                 counter++;
             }
             //chegamos ao fim dos nodes
 
-            if (currentNode.size() <= 1 && counter >= 1)
-            {
+            if (currentNode.size() <= 1 && counter >= 1) {
                 T result = currentNode.removeLast();
                 //currentNode.next = null;
                 this.nNodes--;
@@ -474,8 +412,7 @@ public class UnrolledLinkedList<T> implements IList<T> {
                 currentNode = null;
                 return result;
 
-            }
-            else {
+            } else {
                 return currentNode.removeLast();
             }
 
@@ -484,80 +421,64 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
     @Override
     public T remove(int index) {
-        if (!isEmpty())
-        {
+        if (!isEmpty()) {
             Node currentnode = this.first;
             Node previous = null;
             int cnt = currentnode.size();
             int idx = index;
 
-            while (currentnode != null)
-            {
-                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+            while (currentnode != null) {
+                boolean isInThisBlock = (idx) <= currentnode.size() - 1 && (idx) >= 0;
 
-                if (isInThisBlock && currentnode.size() > 0)
-                {
+                if (isInThisBlock && currentnode.size() > 0) {
                     T result = currentnode.removeIdx(idx);
 
-                    if (currentnode.size() <= 0)
-                    {
-                        if (currentnode == this.first)
-                        {
+                    if (currentnode.size() <= 0) {
+                        if (currentnode == this.first) {
                             this.first = this.first.next;
-                        }
-                        else {
+                        } else {
                             previous.next = currentnode.next;
                         }
 
                         currentnode = null;
                         this.nNodes--;
 
-                    }
-                    else {
+                    } else {
                         currentnode.leftShift(idx);
                     }
                     return result;
-                }
-                else
-                {
+                } else {
                     idx -= currentnode.size();
                     previous = currentnode;
                     currentnode = currentnode.next;
                 }
             }
             return null;
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public T get(int index) {
-        if (!isEmpty())
-        {
+        if (!isEmpty()) {
             Node currentnode = this.first;
             int cnt = currentnode.size();
             int idx = index;
             int counter = 0;
 
-            while (currentnode != null  && counter < this.nNodes)
-            {
-                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+            while (currentnode != null && counter < this.nNodes) {
+                boolean isInThisBlock = (idx) <= currentnode.size() - 1 && (idx) >= 0;
 
-                if (isInThisBlock)
-                {
+                if (isInThisBlock) {
                     return currentnode.getItem(idx);
-                }
-                else
-                {
+                } else {
                     idx -= currentnode.size();
                     currentnode = currentnode.next;
                 }
                 counter++;
             }
             return null;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -565,24 +486,19 @@ public class UnrolledLinkedList<T> implements IList<T> {
     @Override
     public void set(int index, T element) {
 
-        if (!isEmpty())
-        {
+        if (!isEmpty()) {
             Node currentnode = this.first;
             int cnt = currentnode.size();
             int idx = index;
             int counter = 0;
 
-            while (currentnode != null && counter < this.nNodes)
-            {
-                boolean isInThisBlock = (idx) <= currentnode.size()-1 && (idx) >= 0;
+            while (currentnode != null && counter < this.nNodes) {
+                boolean isInThisBlock = (idx) <= currentnode.size() - 1 && (idx) >= 0;
 
-                if (isInThisBlock)
-                {
+                if (isInThisBlock) {
                     currentnode.setItem(idx, element);
                     return;
-                }
-                else
-                {
+                } else {
                     idx -= currentnode.size();
                     currentnode = currentnode.next;
                 }
@@ -597,41 +513,31 @@ public class UnrolledLinkedList<T> implements IList<T> {
     }
 
     public int size() {
-        /*Node currentnode = this.first;
-        int counter = 0;
-        while (currentnode != null)
-        {
 
-            counter += currentnode.size();
-            currentnode = currentnode.next;
-
-        }
-        return counter;*/
         return this.listSize;
     }
 
 
     @Override
     public IList<T> shallowCopy() {
-        UnrolledLinkedList<T>  newList = new UnrolledLinkedList<T>(this.blockSize);
+        UnrolledLinkedList<T> newList = new UnrolledLinkedList<T>(this.blockSize);
 
         newList.first = this.first.shallowCopy();
         newList.nNodes = this.nNodes;
         newList.listSize = this.listSize;
 
-        return  newList;
+        return newList;
     }
 
     //ITERADOR
-    private class UnrolledLinkedListIterator implements Iterator<T>
-    {
+    private class UnrolledLinkedListIterator implements Iterator<T> {
         Node it;
         public int idx;
         public int counter;
         public int currentNode;
         public int size;
-        UnrolledLinkedListIterator()
-        {
+
+        UnrolledLinkedListIterator() {
             this.it = first;
             this.idx = 0;
             this.counter = 0;
@@ -643,14 +549,13 @@ public class UnrolledLinkedList<T> implements IList<T> {
 
             return (this.counter < size && this.it != null && currentNode <= nNodes);
         }
-        public T next()
-        {
+
+        public T next() {
             T result = it.getItem(idx);
 
-            if (this.idx < this.it.size()-1) {
+            if (this.idx < this.it.size() - 1) {
                 this.idx++;
-            }
-            else {
+            } else {
                 this.it = this.it.next;
                 currentNode++;
                 this.idx = 0;
