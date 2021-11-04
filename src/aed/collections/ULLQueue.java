@@ -4,16 +4,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class ULLQueue<T> implements IQueue<T>  {
-    public int blockSize = 200;
-
+    public int blockSize = 4;
     Node first;
     Node last;
+
     int size;
     private int nNodes;
 
     private class Node {
         private T[] items; // elementos do bloco
         private int counter; // n de elementos do array do bloco
+        private int whereToAdd; // n de elementos do
         private Node next;
         private int start;
 
@@ -24,13 +25,12 @@ public class ULLQueue<T> implements IQueue<T>  {
             this.counter = 0;
             this.next = null;
             this.start = 0;
+            this.whereToAdd = 0;
         }
-
         public void addInNode(T item) {
-
-            this.items[counter] = item;
+            this.items[this.whereToAdd] = item;
             this.counter++;
-            //   size++;
+            this.whereToAdd++;
         }
         public int size()
         {
@@ -44,6 +44,7 @@ public class ULLQueue<T> implements IQueue<T>  {
             }
             newNode.counter = this.counter;
             newNode.start = this.start;
+            newNode.whereToAdd = this.whereToAdd;
 
             if (this.next != null)
                 newNode.next = this.next.shallowCopy();
@@ -64,18 +65,7 @@ public class ULLQueue<T> implements IQueue<T>  {
             T result = this.items[this.start];
             return  result;
         }
-        /*public T removeLast() {
-            //System.out.println("counter" + this.counter);
-            T result =  this.items[this.counter-1];
-            this.items[this.counter-1] = null; // delete last
-            this.counter--; //decrement counter
-            listSize--;
-            return result;
-        }*/
     }
-
-
-
 
     public ULLQueue()
     {
@@ -120,7 +110,7 @@ public class ULLQueue<T> implements IQueue<T>  {
         }
         else
         {
-            if (this.last.size() == blockSize)
+            if (this.last.whereToAdd == blockSize)
             {
                 Node newNode = new Node();
                 this.nNodes++;
@@ -140,23 +130,18 @@ public class ULLQueue<T> implements IQueue<T>  {
     @Override
     public T dequeue()
     {
-
-        if (isEmpty())
-        {
+        if (isEmpty()) {
             return  null;
         }
         else {
-            if (this.first != null)
-            {
+            if (this.first != null) {
                 T result = this.first.remove();
                 this.size--;
-                if (this.first.size() <= 0 && size > 0)
+                if (this.first.size() <= 0)
                 {
                     this.first = this.first.next;
                     this.nNodes--;
                 }
-
-
                 return result;
             }
             return null;
@@ -228,8 +213,7 @@ public class ULLQueue<T> implements IQueue<T>  {
             this.size = size();
             if (first != null)
                 this.idx = first.start;
-            else
-                this.idx = 0;
+
         }
         public boolean hasNext() {
             return this.it != null && this.counter < this.size;
@@ -241,24 +225,13 @@ public class ULLQueue<T> implements IQueue<T>  {
         }*/
         public T next()
         {
-            T result = it.items[this.idx];
-
-          //  if (this.idx < this.it.size()) {
-            if (this.idx < blockSize-1) {
-                this.idx++;
-            }
-            else {
-
-                if (this.it != null)
+            T result = it.items[this.idx++];
+            if(this.idx == it.whereToAdd) {
+                if (this.it.next != null) {
                     this.it = this.it.next;
-
-
-                if (this.it != null)
                     this.idx = this.it.start;
-                else
-                    this.idx = 0;
+                }
             }
-
             this.counter++;
             return result;
         }
@@ -268,22 +241,55 @@ public class ULLQueue<T> implements IQueue<T>  {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ULLQueue<Integer> Q = new ULLQueue<Integer>();
-        /*Q.enqueue(1);
 
+
+        Q.enqueue(1);
         Q.enqueue(2);
         Q.enqueue(3);
         Q.enqueue(4);
-        Q.enqueue(5);
-        Q.enqueue(6);*/
 
+        Q.enqueue(5);
+        Q.enqueue(6);
         Q.enqueue(7);
         Q.enqueue(8);
-        Q.enqueue(9);
+        Q.dequeue();
+        Q.dequeue();
+        Q.dequeue();
+        Q.dequeue();
         Q.enqueue(10);
-        Q.enqueue(11);
         Q.enqueue(12);
+        Q.enqueue(13);
+        Q.enqueue(14);
+
 
         Q.dequeue();
+        Q.dequeue();
+        Q.dequeue();
+        Q.dequeue();
+
+        Q.dequeue();
+
+      //  Q.enqueue(10);
+
+       // Q.dequeue();
+
+       /* Q.enqueue(7);
+        Q.enqueue(8);
+        Q.enqueue(9);
+        Q.dequeue();
+        Q.dequeue();
+
+        //System.out.println(Arrays.deepToString(Q.getArrayOfBlocks()));
+        Q.enqueue(10);
+
+        Q.dequeue();
+        Q.dequeue();
+        Q.enqueue(10);*/
+       // Q.dequeue();
+        //Q.dequeue();
+
+       // System.out.println(Q.dequeue());
+
 
         /*Q.enqueue(13);
         Q.enqueue(14);
@@ -304,8 +310,8 @@ public class ULLQueue<T> implements IQueue<T>  {
         Q.enqueue(20);*/
 
 
-        System.out.println( "size" + " " + Q.size());
-        System.out.println( "peek" + " " + Q.peek());
+       // System.out.println( "size" + " " + Q.size());
+      //  System.out.println( "peek" + " " + Q.peek());
 
         ULLQueue<Integer> shallow =  (ULLQueue<Integer>) Q.shallowCopy();
      //   Q.enqueue(3);
